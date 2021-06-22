@@ -18,6 +18,6 @@ public class Main {
 
         Arena arena = new Arena();
         arena.generateHorizontalWall(terminal, ts);
-
+        arena.generateVerticalWall(terminal, ts);
     }
 }
