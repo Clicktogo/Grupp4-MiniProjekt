@@ -8,6 +8,7 @@
         <outputRelativeToContentRoot value="true" />
         <module name="Grupp4MIniProjekt" />
         <module name="Grupp4-MiniProjekt" />
+        <module name="Grupp4-MiniProjekt" />
       </profile>
     </annotationProcessing>
   </component>
