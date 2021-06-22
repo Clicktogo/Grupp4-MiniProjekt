@@ -7,6 +7,13 @@
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
         <module name="Grupp4MIniProjekt" />
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+=======
+        <module name="Grupp4-MiniProjekt" />
+>>>>>>> 0929ff50cb813ff7bd77366013aee3b7814b9827
+>>>>>>> 5ecef439722756c3cb6ab1984dde8d66b29428be
       </profile>
     </annotationProcessing>
   </component>
