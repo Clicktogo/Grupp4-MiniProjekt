@@ -13,5 +13,8 @@ public class Main {
         DefaultTerminalFactory terminalFactory = new DefaultTerminalFactory();
         terminalFactory.setInitialTerminalSize(ts);
         Terminal terminal = terminalFactory.createTerminal();
+
+        Arena arena = new Arena();
+        arena.generateHorizontalWall(terminal, ts);
     }
 }
