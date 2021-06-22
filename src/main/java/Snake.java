@@ -1,21 +1,26 @@
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
 public class Snake {
     final char snakeChar = 'o';
     private int length;
-    private List<Position> position;
+    private List<Position> positionList = new ArrayList<>();
 
     public Snake(int length) {
         this.length = length;
     }
 
     public List<Position> getPosition() {
-        return position;
+        return positionList;
     }
 
     public void setPosition(List<Position> position) {
-        this.position = position;
+        this.positionList = position;
+    }
+
+    public void addPosition(Position position){
+        positionList.add(position);
     }
 
     public int getLength() {
