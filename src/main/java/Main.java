@@ -15,5 +15,9 @@ public class Main {
         Terminal terminal = terminalFactory.createTerminal();
 
         System.out.println(terminal.getTerminalSize());
+
+        Arena arena = new Arena();
+        arena.generateHorizontalWall(terminal, ts);
+
     }
 }

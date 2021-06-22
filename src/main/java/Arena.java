@@ -2,8 +2,20 @@ import com.googlecode.lanterna.TerminalSize;
 import com.googlecode.lanterna.terminal.DefaultTerminalFactory;
 import com.googlecode.lanterna.terminal.Terminal;
 
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+
 public class Arena {
 
     public final char wall = '\u2588';
+    List<Position> wallsList = new ArrayList<>();
 
+    public void generateHorizontalWall(Terminal terminal, TerminalSize ts) throws Exception {
+        for (int i = 0; i < ts.getColumns(); i++) {
+            terminal.setCursorPosition(0,i);
+            terminal.putCharacter(wall);
+            wallsList.add(new Position(0, i));
+        }
+    }
 }
