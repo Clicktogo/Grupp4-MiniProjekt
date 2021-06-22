@@ -13,9 +13,22 @@ public class Arena {
 
     public void generateHorizontalWall(Terminal terminal, TerminalSize ts) throws Exception {
         for (int i = 0; i < ts.getColumns(); i++) {
-            terminal.setCursorPosition(0,i);
+            terminal.setCursorPosition(i, 0);
+            terminal.putCharacter(wall);
+            wallsList.add(new Position(i, 0));
+            terminal.setCursorPosition(i, ts.getRows());
+            terminal.putCharacter(wall);
+            wallsList.add(new Position(i, ts.getRows()));
+        }
+    }
+    public void generateVerticalWall(Terminal terminal, TerminalSize ts) throws Exception {
+        for (int i = 0; i < ts.getRows(); i++) {
+            terminal.setCursorPosition(0, i);
             terminal.putCharacter(wall);
             wallsList.add(new Position(0, i));
+            terminal.setCursorPosition(ts.getColumns(), i);
+            terminal.putCharacter(wall);
+            wallsList.add(new Position(ts.getColumns(), i));
         }
     }
 }
