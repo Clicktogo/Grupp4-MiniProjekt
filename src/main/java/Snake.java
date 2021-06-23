@@ -1,3 +1,5 @@
+import com.googlecode.lanterna.terminal.Terminal;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -17,6 +19,12 @@ public class Snake {
 
     public void setPosition(List<Position> position) {
         this.positionList = position;
+    }
+
+    public void removeTail(Terminal terminal) throws Exception{
+        terminal.setCursorPosition(positionList.get(0).getX(),positionList.get(0).getY());
+        terminal.putCharacter(' ');
+        positionList.remove(0);
     }
 
     public void addPosition(Position position){
