@@ -11,8 +11,12 @@ public class Arena {
     public final char wall = '\u2588';
     List<Position> wallsList = new ArrayList<>();
 
+    public List<Position> getWallsList() {
+        return wallsList;
+    }
+
     public void generateHorizontalWall(Terminal terminal, TerminalSize ts) throws Exception {
-        for (int i = 0; i < ts.getColumns(); i++) {
+        for (int i = 0; i < ts.getColumns()-10; i++) {
             terminal.setCursorPosition(i, 0);
             terminal.putCharacter(wall);
             wallsList.add(new Position(i, 0));
@@ -26,9 +30,9 @@ public class Arena {
             terminal.setCursorPosition(0, i);
             terminal.putCharacter(wall);
             wallsList.add(new Position(0, i));
-            terminal.setCursorPosition(ts.getColumns(), i);
+            terminal.setCursorPosition(ts.getColumns()-10, i);
             terminal.putCharacter(wall);
-            wallsList.add(new Position(ts.getColumns(), i));
+            wallsList.add(new Position(ts.getColumns()-10, i));
         }
     }
 }
