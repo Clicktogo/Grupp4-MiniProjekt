@@ -1,9 +1,10 @@
+import com.googlecode.lanterna.terminal.Terminal;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
 public class Food {
-
 
 
     private Position position;
@@ -16,6 +17,11 @@ public class Food {
 
     public void setPosition(Position position) {
         this.position = position;
+    }
+
+    public void clearFood(Terminal terminal) throws Exception {
+        terminal.setCursorPosition(position.getX(), position.getY());
+        terminal.putCharacter(' ');
     }
 
     public Position randomFoodPosition() {

@@ -13,13 +13,13 @@ public class Main {
 
     public static void main(String[] args) throws Exception {
 
-        TerminalSize ts = new TerminalSize(80, 30);
+        TerminalSize ts = new TerminalSize(85, 30);
         DefaultTerminalFactory terminalFactory = new DefaultTerminalFactory();
         terminalFactory.setInitialTerminalSize(ts);
         Terminal terminal = terminalFactory.createTerminal();
+        terminal.setCursorVisible(false);
 
         Menu(terminal, ts);
-
     }
 
     private static void newFood(Terminal terminal ) throws Exception {
@@ -53,8 +53,9 @@ public class Main {
         newFood(terminal);
 
         printTextToTerminal(terminal, "Highscore: ", 71, 5);
-        for(int i=0; i<highScore.getScoreList().size(); i++){
-            printTextToTerminal(terminal, String.valueOf(highScore.getScoreList().get(i)), 71, 6+i);
+        int size = highScore.getScoreList().size()<3?highScore.getScoreList().size():3;
+        for(int i=0; i<size; i++){
+            printTextToTerminal(terminal, String.format("%d. %d" , i+1, highScore.getScoreList().get(i)), 72, 6+i);
             System.out.println(highScore.getScoreList().get(i));
         }
     }
@@ -140,7 +141,7 @@ public class Main {
                     }
                     //TODO varför funkar det inte som det ska?
                     for (Position p : arena.getWallsList()) {
-                        if (x == 1 || y == 1 || y == ts.getRows() - 2 || x == ts.getColumns() - 12) {
+                        if (x == 1 || y == 1 || y == ts.getRows() - 2 || x == ts.getColumns() - 17) {
                             end = true;
                             continueReadingInput = false;
                             break;
@@ -157,7 +158,10 @@ public class Main {
         }
 
         snake.clearSnake(terminal);
-        printTextToTerminal(terminal, gameOver, 30, 12);
+        food.clearFood(terminal);
+        printTextToTerminal(terminal, gameOver, 32, 12);
+        printTextToTerminal(terminal, "Try again [r]", 32, 15);
+        printTextToTerminal(terminal, "Quit [q]", 32, 17);
         highScore.addScore(score);
 
         terminal.flush();
@@ -166,6 +170,8 @@ public class Main {
 
     private static void Menu(Terminal terminal, TerminalSize ts) throws Exception {
 
+        printTextToTerminal(terminal, "Start [r]", 34, 15);
+        printTextToTerminal(terminal, "Quit [q]", 34, 17);
         KeyStroke keyStroke = null;
         char c = ' ';
         while (keyStroke == null) {
@@ -180,6 +186,7 @@ public class Main {
         switch (c) {
             case 'r':
                 terminal.clearScreen();
+                terminal.setForegroundColor(TextColor.ANSI.WHITE);
                 initializeGame(terminal, ts);
                 runGame(terminal, ts);
             case 'q':
