@@ -1,15 +1,11 @@
 import com.googlecode.lanterna.TerminalSize;
+import com.googlecode.lanterna.TextColor;
 import com.googlecode.lanterna.input.KeyStroke;
 import com.googlecode.lanterna.input.KeyType;
 import com.googlecode.lanterna.terminal.DefaultTerminalFactory;
 import com.googlecode.lanterna.terminal.Terminal;
 
-import java.util.List;
-import java.util.Timer;
-import java.util.TimerTask;
-
 public class Main {
-    static int moveCounter = 0;
 
     public static void main(String[] args) throws Exception {
         System.out.println("Lets do this");
@@ -34,11 +30,15 @@ public class Main {
             terminal.putCharacter(snake.snakeChar);
         }
 
-        Movement direction = Movement.LEFT;
+        Movement direction = Movement.RIGHT;
         boolean continueReadingInput = true;
 
+        Food food = new Food();
+        newFood(terminal, food);
+        String gameOver = "Game Over";
+
         while (continueReadingInput) {
-            newFood(terminal);
+            boolean end = false;
             Position snakeHead = snake.getPosition().get(snake.getPosition().size()-1);
             int x = snakeHead.getX();
             int y = snakeHead.getY();
@@ -55,8 +55,8 @@ public class Main {
                             terminal.exitPrivateMode();
                             return;
                         case ArrowLeft:
-                            if (direction != Movement.LEFT)
-                                direction = Movement.RIGHT;
+                            if (direction != Movement.RIGHT)
+                                direction = Movement.LEFT;
                             break;
                         case ArrowRight:
                             if (direction != Movement.LEFT)
@@ -70,42 +70,64 @@ public class Main {
                             if (direction != Movement.DOWN)
                                 direction = Movement.UP;
                             break;
+                        default:
+                            break;
                     }
                 } else {
-                        x++;
-
+                    switch(direction) {
+                        case LEFT:
+                            x--;
+                            break;
+                        case RIGHT:
+                            x++;
+                            break;
+                        case UP:
+                            y--;
+                            break;
+                        case DOWN:
+                            y++;
+                            break;
+                    }
+                    System.out.println("Food: " + food.getPosition().getX() + " " + food.getPosition().getY() );
+                    System.out.println("Head: " + snakeHead.getX() + " " + snakeHead.getY());
                         snake.addPosition(new Position(x, y));
-                        snake.removeTail(terminal);
+                        if(food.getPosition().getX() == x &&
+                                food.getPosition().getY() == y)
+                            {
+                                System.out.println(snake.getPosition().size());
+                            } else {
+                            snake.removeTail(terminal);
+                        }
+
                         terminal.setCursorPosition(x, y);
                         terminal.putCharacter(snake.snakeChar);
-
-                        System.out.println(snake.getPosition().size());
-                    System.out.println(snake.getPosition().get(0).getX() + " " + snake.getPosition().get(0).getY());
-                    System.out.println(x + " " + y);
                         terminal.flush();
-                        Thread.sleep(1000);
+                        Thread.sleep(500);
 
+                    for(int i =0; i< snake.getPosition().size()-2; i++){
+                        if(snake.getPosition().get(i).getX() == x && snake.getPosition().get(i).getY() == y){
+                            end = true;
+                            continueReadingInput = false;
+                            break;
+                        }
+                      }
                     }
+                if(end){ break;}
             } while (keyStroke == null);
 
-            Character c = keyStroke.getCharacter();
-
-            if (c == Character.valueOf('q')) {
-                continueReadingInput = false;
-                System.out.println("Quit");
-                terminal.close();
-            }
-
-            if (x == 100) {
-                break;
-            }
         }
 
+        snake.clearSnake(terminal);
+        terminal.setForegroundColor(TextColor.ANSI.RED);
+        for (int j = 0; j < gameOver.length(); j++) {
+            terminal.setCursorPosition(35 + j, 12);
+            terminal.putCharacter(gameOver.charAt(j));
+        }
+        terminal.flush();
 
     }
 
-    private static void newFood(Terminal terminal) throws Exception {
-        Food food = new Food();
+    private static void newFood(Terminal terminal, Food food) throws Exception {
         Position foodPosition = food.randomFoodPosition();
         terminal.setCursorPosition(foodPosition.getX(), foodPosition.getY());
         terminal.putCharacter(food.fruit);

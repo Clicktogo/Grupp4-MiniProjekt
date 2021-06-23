@@ -17,6 +17,14 @@ public class Snake {
         return positionList;
     }
 
+    public void clearSnake(Terminal terminal) throws Exception {
+        for(Position p: positionList){
+            terminal.setCursorPosition(p.getX(),p.getY());
+            terminal.putCharacter(' ');
+        }
+        positionList.clear();
+    }
+
     public void setPosition(List<Position> position) {
         this.positionList = position;
     }
