@@ -19,6 +19,7 @@ public class Main {
     static Snake snake = new Snake(4);
     static Food food = new Food();
     static Bomb bomb = new Bomb();
+    static Obstacle obstacle = new Obstacle();
 
 
     public static void main(String[] args) throws Exception {
@@ -92,6 +93,7 @@ public class Main {
     public static void runGame(Terminal terminal, TerminalSize ts) throws Exception {
         int foodCounter = 0;
         int bombCounter = 0;
+        int obstacleCounter = 0;
         int level = 1;
         Movement direction = Movement.RIGHT;
         boolean continueReadingInput = true;
@@ -161,10 +163,11 @@ public class Main {
                     } else {
                         snake.removeTail(terminal);
                     }
-
-                    if(score != 0 && score % 3 == 0) {
-                        level++;
-                    }
+                    /*if (score != level) {
+                        if(score != 0 && score % 3 == 0) {
+                            level++;
+                        }
+                    }*/
 
                     terminal.setCursorPosition(x, y);
                     terminal.putCharacter(snake.snakeChar);
@@ -189,6 +192,23 @@ public class Main {
                             }
                         }
                     }
+
+                    boolean isCollision = true;
+                    if (obstacleCounter == 20) {
+                        while (isCollision) {
+                            obstacle.addObstacle(obstacle.randomObstaclePosition().getX(), obstacle.randomObstaclePosition().getY());
+                            for (Position p : obstacle.obstacleList) {
+                                if (snake.getPosition().contains(p)) {
+                                    isCollision = true;
+                                    break;
+                                }
+                            }
+                            obstacle.printObstacle(obstacle.obstacleList, terminal);
+                            isCollision = false;
+                        }
+                    }
+                    obstacleCounter++;
+
 
                     //TODO möjligen fixa snyggare kod
 
@@ -293,5 +313,8 @@ public class Main {
                 menu(terminal, ts);
                 break;
         }
+    }
+    private static void newObstacle() {
+
     }
 }
