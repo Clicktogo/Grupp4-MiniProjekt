@@ -1,7 +1,5 @@
 import com.googlecode.lanterna.TerminalSize;
 import com.googlecode.lanterna.terminal.Terminal;
-
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -15,10 +13,12 @@ public class Obstacle {
         return obstacleList;
     }
 
-   /* public void clearObstacle(Terminal terminal) throws Exception {
-        terminal.setCursorPosition(position.getX(), position.getY());
-        terminal.putCharacter(' ');
-    } */
+    public void clearObstacle(Terminal terminal) throws Exception {
+        for (Position p : obstacleList) {
+            terminal.setCursorPosition(p.getX(), p.getY());
+            terminal.putCharacter(' ');
+        }
+    }
 
     public Position randomObstaclePosition() {
         Random r = new Random();
@@ -55,7 +55,6 @@ public class Obstacle {
         for(int i = 0; i < 5; i++) {
             Position position = new Position(x + i, y);
             obstacleList.add(position);
-        return;
         }
     }
     public void printObstacle(List<Position> obstacleList, Terminal terminal) throws Exception {

@@ -193,7 +193,7 @@ public class Main {
                         }
                     }
 
-                    boolean isCollision = true;
+                    /*boolean isCollision = true;
                     if (obstacleCounter == 20) {
                         while (isCollision) {
                             obstacle.addObstacle(obstacle.randomObstaclePosition().getX(), obstacle.randomObstaclePosition().getY());
@@ -209,6 +209,15 @@ public class Main {
                     }
                     obstacleCounter++;
 
+                    if (obstacle != null) {
+                        for (Position p : obstacle.getObstacleList()) {
+                            if (x == p.getX() || p.getY() == y) {
+                                end = true;
+                                continueReadingInput = false;
+                                break;
+                            }
+                        }
+                    }*/
 
                     //TODO möjligen fixa snyggare kod
 
@@ -275,6 +284,7 @@ public class Main {
         snake.clearSnake(terminal);
         food.clearFood(terminal);
         bomb.clearBomb(terminal);
+        obstacle.clearObstacle(terminal);
         printTextToTerminal(terminal, gameOver, 32, 12);
         printTextToTerminal(terminal, "Try again [r]", 32, 15);
         printTextToTerminal(terminal, "Quit [q]", 32, 17);
@@ -289,13 +299,19 @@ public class Main {
         printTextToTerminal(terminal, "Start [r]", 34, 15);
         printTextToTerminal(terminal, "Quit [q]", 34, 17);
         KeyStroke keyStroke = null;
-        char c = 'r';
+        char c = 'x';
         while (keyStroke == null) {
             Thread.sleep(5);
             keyStroke = terminal.pollInput();
-            if (keyStroke != null) {
-                c = keyStroke.getCharacter();
-                break;
+            {
+                if (keyStroke != null) {
+                    if (keyStroke.getCharacter() == null) {
+                        continue;
+                    } else {
+                        c = keyStroke.getCharacter();
+                        break;
+                    }
+                }
             }
         }
 
