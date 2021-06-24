@@ -25,10 +25,6 @@ public class Snake {
         positionList.clear();
     }
 
-    public void setPosition(List<Position> position) {
-        this.positionList = position;
-    }
-
     public void removeTail(Terminal terminal) throws Exception{
         terminal.setCursorPosition(positionList.get(0).getX(),positionList.get(0).getY());
         terminal.putCharacter(' ');
@@ -41,10 +37,6 @@ public class Snake {
 
     public int getLength() {
         return length;
-    }
-
-    public void setLength(int length) {
-        this.length = length;
     }
 
     public Position getStartPosition() {

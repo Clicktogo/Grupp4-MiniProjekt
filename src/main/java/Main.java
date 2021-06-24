@@ -36,8 +36,8 @@ public class Main {
 
     private static void newFood(Terminal terminal) throws Exception {
         boolean isTrue = true;
-        while (isTrue){
-            if (!snake.getPosition().contains(food.getPosition())){
+        while (isTrue) {
+            if (!snake.getPosition().contains(food.getPosition())) {
                 Position foodPosition = food.randomFoodPosition();
                 terminal.setCursorPosition(foodPosition.getX(), foodPosition.getY());
                 terminal.putCharacter(food.fruit);
@@ -48,8 +48,8 @@ public class Main {
 
     private static void newBomb(Terminal terminal) throws Exception {
         boolean isTrue = true;
-        while (isTrue){
-            if (!snake.getPosition().contains(bomb.getPosition())){
+        while (isTrue) {
+            if (!snake.getPosition().contains(bomb.getPosition())) {
                 Position foodPosition = bomb.randomBombPosition();
                 terminal.setCursorPosition(foodPosition.getX(), foodPosition.getY());
                 terminal.putCharacter(bomb.getBombChar());
@@ -95,6 +95,7 @@ public class Main {
         int bombCounter = 0;
         int obstacleCounter = 0;
         int level = 1;
+        boolean isUpdated = false;
         Movement direction = Movement.RIGHT;
         boolean continueReadingInput = true;
         String gameOver = "Game Over";
@@ -112,6 +113,7 @@ public class Main {
             int y = snakeHead.getY();
             KeyStroke keyStroke = null;
 
+            //TODO - Hur röra sig.
             do {
                 Thread.sleep(5);
                 keyStroke = terminal.pollInput();
@@ -155,35 +157,64 @@ public class Main {
                             y++;
                             break;
                     }
+
+                    for (Position p : arena.getWallsList()) {
+                        if (x == 1 || y == 1 || y == ts.getRows() - 1 || x == ts.getColumns() - 16) {
+                            end = true;
+                            continueReadingInput = false;
+                            break;
+                        }
+                    }
+
                     snake.addPosition(new Position(x, y));
                     if (food.getPosition().getX() == x && food.getPosition().getY() == y) {
                         newFood(terminal);
                         score++;
+                        isUpdated = false;
                         foodCounter = 0;
                     } else {
                         snake.removeTail(terminal);
                     }
-                    /*if (score != level) {
-                        if(score != 0 && score % 3 == 0) {
+
+
+                    //TODO - Skriva ut väggar utan att krocka med ormen
+                    if (score != 0 && score % 3 == 0) {
+                        if (!isUpdated) {
                             level++;
+                            isUpdated = true;
+                            boolean isCollision = true;
+                            while (isCollision) {
+                                obstacle.addObstacle(obstacle.randomObstaclePosition().getX(), obstacle.randomObstaclePosition().getY());
+                                for (Position p : obstacle.obstacleList) {
+                                    if (snake.getPosition().contains(p)) {
+                                        obstacle.obstacleList.clear();
+                                        break;
+                                    }
+                                }
+                                obstacle.printObstacle(obstacle.obstacleList, terminal);
+                                isCollision = false;
+                            }
                         }
-                    }*/
+                    }
+
 
                     terminal.setCursorPosition(x, y);
                     terminal.putCharacter(snake.snakeChar);
                     foodCounter++;
 
-                    if(bombCounter == 20){
-                        newBomb(terminal);
+                    if (bombCounter == 20) {
+                        for (int i = 0; i < level + 1; i++) {
+                            newBomb(terminal);
+                        }
                     }
                     bombCounter++;
 
-                    if(bombCounter == 100){
-                        bomb.clearBomb(terminal);
+                    if (bombCounter == 100) {
+                        bomb.clearBombList(terminal);
                         bombCounter = 0;
                     }
 
-                    if(bomb.getPosition() != null){
+                    if (bomb.getPosition() != null) {
                         for (Position p : snake.getPosition()) {
                             if (bomb.getPosition().getX() == p.getX() && bomb.getPosition().getY() == p.getY()) {
                                 end = true;
@@ -193,97 +224,62 @@ public class Main {
                         }
                     }
 
-                    /*boolean isCollision = true;
-                    if (obstacleCounter == 20) {
-                        while (isCollision) {
-                            obstacle.addObstacle(obstacle.randomObstaclePosition().getX(), obstacle.randomObstaclePosition().getY());
-                            for (Position p : obstacle.obstacleList) {
-                                if (snake.getPosition().contains(p)) {
-                                    isCollision = true;
-                                    break;
-                                }
-                            }
-                            obstacle.printObstacle(obstacle.obstacleList, terminal);
-                            isCollision = false;
-                        }
-                    }
-                    obstacleCounter++;
 
                     if (obstacle != null) {
-                        for (Position p : obstacle.getObstacleList()) {
-                            if (x == p.getX() || p.getY() == y) {
+                        for (Position p : obstacle.obstacleList) {
+                            if (p.getX() == x && p.getY() == y) {
                                 end = true;
                                 continueReadingInput = false;
                                 break;
                             }
                         }
-                    }*/
+                    }
 
-                    //TODO möjligen fixa snyggare kod
+                    if (bomb.getBombList() != null) {
+                        for (Position p : bomb.getBombList()) {
+                            if (p.getX() == x && p.getY() == y) {
+                                end = true;
+                                continueReadingInput = false;
+                                break;
+                            }
+                        }
+                    }
 
-                    if (foodCounter > 40 && foodCounter % 3 == 0){
+                    //TODO - Maten blinkar när den är på väg att försvinna
+                    if (foodCounter > 40 && foodCounter % 3 == 0) {
                         terminal.setCursorPosition(food.getPosition().getX(), food.getPosition().getY());
                         terminal.putCharacter(' ');
-                    } else if(foodCounter > 50 && foodCounter < 70) {
+                    } else if (foodCounter > 41 && foodCounter < 70) {
                         terminal.setCursorPosition(food.getPosition().getX(), food.getPosition().getY());
                         terminal.putCharacter('A');
-                    } else if (foodCounter >= 70){
+                    } else if (foodCounter >= 80) {
                         food.clearFood(terminal);
                         newFood(terminal);
                         foodCounter = 0;
                     }
 
-                   /* if (foodCounter == 30) {
-                        terminal.setCursorPosition(food.getPosition().getX(), food.getPosition().getY());
-                        terminal.putCharacter(' ');
-                    } else if (foodCounter == 35) {
-                        terminal.setCursorPosition(food.getPosition().getX(), food.getPosition().getY());
-                        terminal.putCharacter('A');
-                    } else if (foodCounter == 40) {
-                        terminal.setCursorPosition(food.getPosition().getX(), food.getPosition().getY());
-                        terminal.putCharacter(' ');
-                    } else if (foodCounter == 45) {
-                        terminal.setCursorPosition(food.getPosition().getX(), food.getPosition().getY());
-                        terminal.putCharacter('A');
-                    } else if (foodCounter == 100) {
-                        {
-                            food.clearFood(terminal);
-                            newFood(terminal);
-                            foodCounter = 0;
-                        }
-                    }*/
 
-                        terminal.flush();
-                        Thread.sleep(200);
+                    terminal.flush();
+                    Thread.sleep(70);
 
-                        for (int i = 0; i < snake.getPosition().size() - 2; i++) {
-                            if (snake.getPosition().get(i).getX() == x && snake.getPosition().get(i).getY() == y) {
-                                end = true;
-                                continueReadingInput = false;
-                                break;
-                            }
+                    for (int i = 0; i < snake.getPosition().size() - 2; i++) {
+                        if (snake.getPosition().get(i).getX() == x && snake.getPosition().get(i).getY() == y) {
+                            end = true;
+                            continueReadingInput = false;
+                            break;
                         }
-                        //TODO varför funkar det inte som det ska?
-                        for (Position p : arena.getWallsList()) {
-                            if (x == 1 || y == 1 || y == ts.getRows() - 2 || x == ts.getColumns() - 16) {
-                                end = true;
-                                continueReadingInput = false;
-                                break;
-                            }
-                        }
-
-                    }
-                    if (end) {
-                        break;
                     }
                 }
-                while (keyStroke == null) ;
-
+                if (end) {
+                    break;
+                }
             }
+            while (keyStroke == null);
+        }
 
         snake.clearSnake(terminal);
         food.clearFood(terminal);
-        bomb.clearBomb(terminal);
+        bomb.clearBombList(terminal);
         obstacle.clearObstacle(terminal);
         printTextToTerminal(terminal, gameOver, 32, 12);
         printTextToTerminal(terminal, "Try again [r]", 32, 15);
@@ -330,6 +326,7 @@ public class Main {
                 break;
         }
     }
+
     private static void newObstacle() {
 
     }

@@ -1,5 +1,6 @@
 import com.googlecode.lanterna.terminal.Terminal;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -21,17 +22,30 @@ public class Bomb {
 
     public Position randomBombPosition() {
         Random r = new Random();
-        int low1 = 1;
-        int high1 = 69;
-        int low2 = 1;
-        int high2 = 29;
+        int low1 = 2;
+        int high1 = 68;
+        int low2 = 2;
+        int high2 = 28;
         int randomHorizontal = r.nextInt(high1-low1) + low1;
         int randomVertical = r.nextInt(high2-low2) + low2;
         position = new Position(randomHorizontal, randomVertical);
+        bombList.add(position);
         return position;
     }
 
     public Character getBombChar() {
         return bombChar;
+    }
+
+    public List<Position> getBombList() {
+        return bombList;
+    }
+
+    public void clearBombList(Terminal terminal) throws Exception {
+        for (Position p : bombList) {
+            terminal.setCursorPosition(p.getX(), p.getY());
+            terminal.putCharacter(' ');
+        }
+        bombList.clear();
     }
 }

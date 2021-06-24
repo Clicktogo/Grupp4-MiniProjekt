@@ -15,10 +15,6 @@ public class Food {
         return position;
     }
 
-    public void setPosition(Position position) {
-        this.position = position;
-    }
-
     public void clearFood(Terminal terminal) throws Exception {
         terminal.setCursorPosition(position.getX(), position.getY());
         terminal.putCharacter(' ');
