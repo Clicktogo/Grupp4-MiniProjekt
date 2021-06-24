@@ -6,14 +6,20 @@ import com.googlecode.lanterna.input.KeyType;
 import com.googlecode.lanterna.terminal.DefaultTerminalFactory;
 import com.googlecode.lanterna.terminal.IOSafeTerminal;
 import com.googlecode.lanterna.terminal.Terminal;
+import com.sun.jdi.Value;
 
 import java.awt.*;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Random;
 
 public class Main {
     static HighScore highScore = new HighScore();
     static Arena arena = new Arena();
     static Snake snake = new Snake(4);
     static Food food = new Food();
+    static Bomb bomb = new Bomb();
+
 
     public static void main(String[] args) throws Exception {
         TerminalSize ts = new TerminalSize(85, 30);
@@ -28,9 +34,27 @@ public class Main {
     }
 
     private static void newFood(Terminal terminal) throws Exception {
-        Position foodPosition = food.randomFoodPosition();
-        terminal.setCursorPosition(foodPosition.getX(), foodPosition.getY());
-        terminal.putCharacter(food.fruit);
+        boolean isTrue = true;
+        while (isTrue){
+            if (!snake.getPosition().contains(food.getPosition())){
+                Position foodPosition = food.randomFoodPosition();
+                terminal.setCursorPosition(foodPosition.getX(), foodPosition.getY());
+                terminal.putCharacter(food.fruit);
+                isTrue = false;
+            }
+        }
+    }
+
+    private static void newBomb(Terminal terminal) throws Exception {
+        boolean isTrue = true;
+        while (isTrue){
+            if (!snake.getPosition().contains(bomb.getPosition())){
+                Position foodPosition = bomb.randomBombPosition();
+                terminal.setCursorPosition(foodPosition.getX(), foodPosition.getY());
+                terminal.putCharacter(bomb.getBombChar());
+                isTrue = false;
+            }
+        }
     }
 
     private static void printTextToTerminal(Terminal terminal, String text, int x, int y) throws Exception {
@@ -57,16 +81,18 @@ public class Main {
 
         newFood(terminal);
 
-        printTextToTerminal(terminal, "Highscore: ", 71, 5);
-        int size = highScore.getScoreList().size() < 3 ? highScore.getScoreList().size() : 3;
+        printTextToTerminal(terminal, "Highscore: ", 71, 10);
+        int size = Math.min(highScore.getScoreList().size(), 3); //highScore.getScoreList().size() < 3 ? highScore.getScoreList().size() : 3;
         for (int i = 0; i < size; i++) {
-            printTextToTerminal(terminal, String.format("%d. %d", i + 1, highScore.getScoreList().get(i)), 72, 6 + i);
+            printTextToTerminal(terminal, String.format("%d. %d", i + 1, highScore.getScoreList().get(i)), 72, 11 + i);
             System.out.println(highScore.getScoreList().get(i));
         }
     }
 
     public static void runGame(Terminal terminal, TerminalSize ts) throws Exception {
         int foodCounter = 0;
+        int bombCounter = 0;
+        int level = 1;
         Movement direction = Movement.RIGHT;
         boolean continueReadingInput = true;
         String gameOver = "Game Over";
@@ -75,6 +101,8 @@ public class Main {
         while (continueReadingInput) {
             String scoreString = String.format("Score: %d", score);
             printTextToTerminal(terminal, scoreString, 71, 0);
+            String sLevel = String.format("Level: %d", level);
+            printTextToTerminal(terminal, sLevel, 71, 5);
 
             boolean end = false;
             Position snakeHead = snake.getPosition().get(snake.getPosition().size() - 1);
@@ -134,12 +162,49 @@ public class Main {
                         snake.removeTail(terminal);
                     }
 
+                    if(score != 0 && score % 3 == 0) {
+                        level++;
+                    }
+
                     terminal.setCursorPosition(x, y);
                     terminal.putCharacter(snake.snakeChar);
                     foodCounter++;
 
+                    if(bombCounter == 20){
+                        newBomb(terminal);
+                    }
+                    bombCounter++;
+
+                    if(bombCounter == 100){
+                        bomb.clearBomb(terminal);
+                        bombCounter = 0;
+                    }
+
+                    if(bomb.getPosition() != null){
+                        for (Position p : snake.getPosition()) {
+                            if (bomb.getPosition().getX() == p.getX() && bomb.getPosition().getY() == p.getY()) {
+                                end = true;
+                                continueReadingInput = false;
+                                break;
+                            }
+                        }
+                    }
+
                     //TODO möjligen fixa snyggare kod
-                    if (foodCounter == 30) {
+
+                    if (foodCounter > 40 && foodCounter % 3 == 0){
+                        terminal.setCursorPosition(food.getPosition().getX(), food.getPosition().getY());
+                        terminal.putCharacter(' ');
+                    } else if(foodCounter > 50 && foodCounter < 70) {
+                        terminal.setCursorPosition(food.getPosition().getX(), food.getPosition().getY());
+                        terminal.putCharacter('A');
+                    } else if (foodCounter >= 70){
+                        food.clearFood(terminal);
+                        newFood(terminal);
+                        foodCounter = 0;
+                    }
+
+                   /* if (foodCounter == 30) {
                         terminal.setCursorPosition(food.getPosition().getX(), food.getPosition().getY());
                         terminal.putCharacter(' ');
                     } else if (foodCounter == 35) {
@@ -151,16 +216,16 @@ public class Main {
                     } else if (foodCounter == 45) {
                         terminal.setCursorPosition(food.getPosition().getX(), food.getPosition().getY());
                         terminal.putCharacter('A');
-                    } else if (foodCounter == 50) {
+                    } else if (foodCounter == 100) {
                         {
                             food.clearFood(terminal);
                             newFood(terminal);
                             foodCounter = 0;
                         }
-                    }
+                    }*/
 
                         terminal.flush();
-                        Thread.sleep(100);
+                        Thread.sleep(200);
 
                         for (int i = 0; i < snake.getPosition().size() - 2; i++) {
                             if (snake.getPosition().get(i).getX() == x && snake.getPosition().get(i).getY() == y) {
@@ -171,7 +236,7 @@ public class Main {
                         }
                         //TODO varför funkar det inte som det ska?
                         for (Position p : arena.getWallsList()) {
-                            if (x == 1 || y == 1 || y == ts.getRows() - 2 || x == ts.getColumns() - 17) {
+                            if (x == 1 || y == 1 || y == ts.getRows() - 2 || x == ts.getColumns() - 16) {
                                 end = true;
                                 continueReadingInput = false;
                                 break;
@@ -189,6 +254,7 @@ public class Main {
 
         snake.clearSnake(terminal);
         food.clearFood(terminal);
+        bomb.clearBomb(terminal);
         printTextToTerminal(terminal, gameOver, 32, 12);
         printTextToTerminal(terminal, "Try again [r]", 32, 15);
         printTextToTerminal(terminal, "Quit [q]", 32, 17);
@@ -203,7 +269,7 @@ public class Main {
         printTextToTerminal(terminal, "Start [r]", 34, 15);
         printTextToTerminal(terminal, "Quit [q]", 34, 17);
         KeyStroke keyStroke = null;
-        char c = ' ';
+        char c = 'r';
         while (keyStroke == null) {
             Thread.sleep(5);
             keyStroke = terminal.pollInput();
